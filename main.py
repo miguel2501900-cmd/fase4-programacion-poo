@@ -8,6 +8,11 @@ class AplicacionSoftwareFJ(tk.Tk):
         self.title("Sistema de Gestión - Software FJ")
         self.geometry("700x500")
 
+        # AGREGA ESTAS LISTAS AQUÍ:
+        self.lista_clientes = []
+        self.lista_servicios = []
+        self.lista_reservas = []
+
         # Aquí armamos el sistema de pestañas (Notebook) para ordenar la interfaz
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill="both", expand=True, padx=10, pady=10)
@@ -29,11 +34,55 @@ class AplicacionSoftwareFJ(tk.Tk):
         self.crear_tab_reservas()
         self.crear_tab_auditoria()
 
-    # --- PESTAÑA 1: CLIENTES (Aquí Enrique conectará su módulo) ---
+    # --- PESTAÑA 1: CLIENTES (Módulo de Enrique) ---
     def crear_tab_clientes(self):
         lbl = ttk.Label(self.tab_clientes, text="Formulario de Registro de Clientes", font=("Arial", 12, "bold"))
         lbl.pack(pady=10)
-        # Espacio reservado para los campos de texto y botones del cliente
+        
+        frame_form = ttk.Frame(self.tab_clientes)
+        frame_form.pack(pady=10)
+        
+        # Campos del formulario
+        ttk.Label(frame_form, text="Cédula:").grid(row=0, column=0, padx=5, pady=5)
+        self.ent_cedula = ttk.Entry(frame_form)
+        self.ent_cedula.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_form, text="Nombre:").grid(row=1, column=0, padx=5, pady=5)
+        self.ent_nombre = ttk.Entry(frame_form)
+        self.ent_nombre.grid(row=1, column=1, padx=5, pady=5)
+
+        ttk.Label(frame_form, text="Correo:").grid(row=2, column=0, padx=5, pady=5)
+        self.ent_correo = ttk.Entry(frame_form)
+        self.ent_correo.grid(row=2, column=1, padx=5, pady=5)
+
+        ttk.Label(frame_form, text="Teléfono:").grid(row=3, column=0, padx=5, pady=5)
+        self.ent_telefono = ttk.Entry(frame_form)
+        self.ent_telefono.grid(row=3, column=1, padx=5, pady=5)
+        
+        btn_guardar = ttk.Button(self.tab_clientes, text="Registrar Cliente", command=self.registrar_cliente)
+        btn_guardar.pack(pady=10)
+
+    def registrar_cliente(self):
+        try:
+            # Llama a tu clase Cliente; si algo falla, dispara ClienteInvalidoError
+            from clientes import Cliente
+            nuevo_cliente = Cliente(
+                self.ent_cedula.get(),
+                self.ent_nombre.get(),
+                self.ent_correo.get(),
+                self.ent_telefono.get()
+            )
+            self.lista_clientes.append(nuevo_cliente)
+            messagebox.showinfo("Éxito", f"Cliente {nuevo_cliente.nombre} registrado.")
+            
+            # Limpiar campos
+            self.ent_cedula.delete(0, 'end')
+            self.ent_nombre.delete(0, 'end')
+            self.ent_correo.delete(0, 'end')
+            self.ent_telefono.delete(0, 'end')
+            
+        except excepciones.ClienteInvalidoError as e:
+            messagebox.showerror("Error de Validación", str(e.mensaje))
 
     # --- PESTAÑA 2: SERVICIOS (Aquí José conectará su módulo) ---
     def crear_tab_servicios(self):
