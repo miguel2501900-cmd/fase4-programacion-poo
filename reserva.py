@@ -16,7 +16,7 @@ class Reserva:
             if not isinstance(self.duracion, (int, float)) or self.duracion <= 0:
                 raise ReservaFallidaError(f"Reserva {self.id_reserva}: La duración debe ser mayor a 0.")
             
-            # VALIDACIÓN NUEVA: revisar si el servicio está disponible antes de confirmar la reserva
+            # Verifica si el servicio está disponible antes de confirmar la reserva
             if self.servicio.estado != "Disponible":
                 raise ReservaFallidaError(
                     f"Reserva {self.id_reserva}: El servicio {self.servicio.codigo} no se puede reservar porque está {self.servicio.estado}."
