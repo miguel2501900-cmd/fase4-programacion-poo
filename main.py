@@ -8,7 +8,7 @@ class AplicacionSoftwareFJ(tk.Tk):
         self.title("Sistema de Gestión - Software FJ")
         self.geometry("700x500")
 
-        # AGREGA ESTAS LISTAS AQUÍ:
+        # Aqui agregamos las listas para almacenar los objetos de clientes, servicios y reservas 
         self.lista_clientes = []
         self.lista_servicios = []
         self.lista_reservas = []
