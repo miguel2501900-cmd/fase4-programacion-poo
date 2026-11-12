@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from Servicios import Sala, Equipo, Asesoria
+from Servicios import Sala, Equipo,  Asesoria
 import excepciones  # Importamos el archivo de excepciones y logs que creamos
 
 class AplicacionSoftwareFJ(tk.Tk):
