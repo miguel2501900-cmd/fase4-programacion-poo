@@ -85,7 +85,9 @@ class AplicacionSoftwareFJ(tk.Tk):
         except excepciones.ClienteInvalidoError as e:
             messagebox.showerror("Error de Validación", str(e.mensaje))
 
-    # --- PESTAÑA 2: SERVICIOS (Aquí José conectará su módulo) ---
+    # -- PESTAÑA 2: SERVICIOS (Aquí José conectará su módulo) --
+    
+    # Esta función crea la interfaz de la pestaña de servicios, con botones y un cuadro visual para mostrar los servicios registrados
     def crear_tab_servicios(self):
         lbl = ttk.Label(self.tab_servicios, text="Catálogo de Servicios", font=("Arial", 12, "bold"))
         lbl.pack(pady=10)
@@ -112,21 +114,112 @@ class AplicacionSoftwareFJ(tk.Tk):
             command=self.registrar_asesoria
         ).grid(row=0, column=2, padx=5)
 
-        # Lista donde se mostrarán los servicios
-        self.lista_servicios = tk.Listbox(
+        # Cuadro visual: Le ponemos "visor_servicios_ui" para que sea más fácil de identificar en el código
+        self.visor_servicios_ui = tk.Listbox(
             self.tab_servicios,
             width=80,
             height=12
         )
-        self.lista_servicios.pack(pady=15)
-        # Espacio reservado para mostrar las opciones y tipos de servicio
+        self.visor_servicios_ui.pack(pady=15)
 
+    # Estas funciones se ejecutan SOLO cuando haces clic en los botones
+
+    def registrar_sala(self):
+        import excepciones
+        try:
+            from Servicios import Sala 
+            
+            nueva_sala = Sala(codigo="S01", nombre="Sala Juntas", capacidad=15)
+            
+            # Guardamos el objeto en la memoria real (Backend)
+            self.lista_servicios.append(nueva_sala)
+            
+            # Mostramos el texto en el cuadro visual (Frontend)
+            self.visor_servicios_ui.insert('end', nueva_sala.mostrar_informacion())
+            
+            messagebox.showinfo("Éxito", f"Sala {nueva_sala.codigo} registrada.")
+        except excepciones.ServicioNoDisponibleError as e:
+            messagebox.showerror("Error de Servicio", str(e.mensaje))
+
+    def registrar_equipo(self):
+        messagebox.showinfo("Info", "Botón de Equipo conectado. Funcionalidad en desarrollo.")
+
+    def registrar_asesoria(self):
+        messagebox.showinfo("Info", "Botón de Asesoría conectado. Funcionalidad en desarrollo.")
     # --- PESTAÑA 3: RESERVAS (Aquí se gestionará la lógica de reservas) ---
-    def crear_tab_reservas(self):
+     def crear_tab_reservas(self):
         lbl = ttk.Label(self.tab_reservas, text="Control y Solicitud de Reservas", font=("Arial", 12, "bold"))
         lbl.pack(pady=10)
-        # Espacio reservado para enlazar la creación de reservas
+        
+        frame_reserva = ttk.Frame(self.tab_reservas)
+        frame_reserva.pack(pady=10)
 
+        # Campos para solicitar la reserva
+        ttk.Label(frame_reserva, text="ID de la Reserva:").grid(row=0, column=0, padx=5, pady=5)
+        self.ent_id_reserva = ttk.Entry(frame_reserva)
+        self.ent_id_reserva.grid(row=0, column=1, padx=5, pady=5)
+
+        ttk.Label(frame_reserva, text="Cédula del Cliente:").grid(row=1, column=0, padx=5, pady=5)
+        self.ent_cedula_res = ttk.Entry(frame_reserva)
+        self.ent_cedula_res.grid(row=1, column=1, padx=5, pady=5)
+
+        ttk.Label(frame_reserva, text="ID del Servicio:").grid(row=2, column=0, padx=5, pady=5)
+        self.ent_id_servicio = ttk.Entry(frame_reserva)
+        self.ent_id_servicio.grid(row=2, column=1, padx=5, pady=5)
+
+        ttk.Label(frame_reserva, text="Duración (Horas/Días):").grid(row=3, column=0, padx=5, pady=5)
+        self.ent_duracion = ttk.Entry(frame_reserva)
+        self.ent_duracion.grid(row=3, column=1, padx=5, pady=5)
+
+        btn_procesar = ttk.Button(self.tab_reservas, text="Procesar y Confirmar", command=self.ejecutar_reserva)
+        btn_procesar.pack(pady=15)
+
+    def ejecutar_reserva(self):
+        try:
+            from reserva import Reserva
+            import excepciones
+            
+            cedula_buscar = self.ent_cedula_res.get()
+            codigo_servicio_buscar = self.ent_id_servicio.get() 
+
+            # Busca el cliente por cédula
+            cliente_obj = next((c for c in self.lista_clientes if c.cedula == cedula_buscar), None)
+            
+            # Busca el servicio por CODIGO (usando getattr para evitar errores si el objeto no tiene 'codigo')
+            servicio_obj = next((s for s in self.lista_servicios if getattr(s, 'codigo', None) == codigo_servicio_buscar), None)
+
+            if cliente_obj is None:
+                raise excepciones.ReservaFallidaError("El cliente no se encuentra registrado.")
+            if servicio_obj is None:
+                raise excepciones.ReservaFallidaError("El código de servicio no existe.")
+
+            if not self.ent_duracion.get().replace('.', '', 1).isdigit():
+                 raise excepciones.ReservaFallidaError("La duración debe ser un valor numérico.")
+            
+            duracion_val = float(self.ent_duracion.get())
+
+            nueva_reserva = Reserva(
+                id_reserva=self.ent_id_reserva.get(),
+                cliente=cliente_obj,
+                servicio=servicio_obj,
+                duracion=duracion_val
+            )
+            # Procesa aplicando validaciones
+            nueva_reserva.procesar()
+
+            # Guarda la reserva
+            self.lista_reservas.append(nueva_reserva)
+            messagebox.showinfo("Operación Exitosa", f"Reserva {nueva_reserva.id_reserva} confirmada. Servicio actualizado a: {servicio_obj.estado}")
+
+            # Limpia los campos
+            self.ent_id_reserva.delete(0, 'end')
+            self.ent_cedula_res.delete(0, 'end')
+            self.ent_id_servicio.delete(0, 'end')
+            self.ent_duracion.delete(0, 'end')
+
+        except excepciones.ReservaFallidaError as e:
+            messagebox.showerror("Error al procesar reserva", str(e.mensaje))
+            
     # --- PESTAÑA 4: AUDITORÍA Y PRUEBAS (Nuestra zona de control de errores) ---
     def crear_tab_auditoria(self):
         lbl = ttk.Label(self.tab_auditoria, text="Consola de Auditoría y Simulación de Excepciones", font=("Arial", 12, "bold"))
