@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from Servicios import Sala, Equipo, Asesoria
 import excepciones  # Importamos el archivo de excepciones y logs que creamos
 
 class AplicacionSoftwareFJ(tk.Tk):
@@ -88,6 +89,36 @@ class AplicacionSoftwareFJ(tk.Tk):
     def crear_tab_servicios(self):
         lbl = ttk.Label(self.tab_servicios, text="Catálogo de Servicios", font=("Arial", 12, "bold"))
         lbl.pack(pady=10)
+
+        # Botones para cada tipo de servicio
+        frame_botones = ttk.Frame(self.tab_servicios)
+        frame_botones.pack(pady=10)
+
+        ttk.Button(
+            frame_botones,
+            text="Registrar Sala",
+            command=self.registrar_sala
+        ).grid(row=0, column=0, padx=5)
+
+        ttk.Button(
+            frame_botones,
+            text="Registrar Equipo",
+            command=self.registrar_equipo
+        ).grid(row=0, column=1, padx=5)
+
+        ttk.Button(
+            frame_botones,
+            text="Registrar Asesoría",
+            command=self.registrar_asesoria
+        ).grid(row=0, column=2, padx=5)
+
+        # Lista donde se mostrarán los servicios
+        self.lista_servicios = tk.Listbox(
+            self.tab_servicios,
+            width=80,
+            height=12
+        )
+        self.lista_servicios.pack(pady=15)
         # Espacio reservado para mostrar las opciones y tipos de servicio
 
     # --- PESTAÑA 3: RESERVAS (Aquí se gestionará la lógica de reservas) ---
