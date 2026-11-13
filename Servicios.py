@@ -15,9 +15,7 @@ class Sala:
     @codigo.setter
     def codigo(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El código de la sala no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El código de la sala no puede estar vacío.")
         self.__codigo = valor
 
     @property
@@ -27,9 +25,7 @@ class Sala:
     @nombre.setter
     def nombre(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El nombre de la sala no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El nombre de la sala no puede estar vacío.")
         self.__nombre = valor
 
     @property
@@ -41,15 +37,9 @@ class Sala:
         try:
             valor = int(valor)
         except ValueError:
-            raise ServicioNoDisponibleError(
-                "La capacidad debe ser un número entero."
-            )
-
+            raise ServicioNoDisponibleError("La capacidad debe ser un número entero.")
         if valor <= 0:
-            raise ServicioNoDisponibleError(
-                "La capacidad debe ser mayor que cero."
-            )
-
+            raise ServicioNoDisponibleError("La capacidad debe ser mayor que cero.")
         self.__capacidad = valor
 
     @property
@@ -59,19 +49,12 @@ class Sala:
     @estado.setter
     def estado(self, valor):
         estados_validos = ["Disponible", "Ocupada", "Mantenimiento"]
-
         if valor not in estados_validos:
-            raise ServicioNoDisponibleError(
-                f"Estado inválido. Debe ser uno de: {estados_validos}"
-            )
-
+            raise ServicioNoDisponibleError(f"Estado inválido. Debe ser uno de: {estados_validos}")
         self.__estado = valor
 
     def mostrar_informacion(self):
-        return (
-            f"Sala {self.codigo} - {self.nombre} | "
-            f"Capacidad: {self.capacidad} | Estado: {self.estado}"
-        )
+        return f"Sala {self.codigo} - {self.nombre} | Capacidad: {self.capacidad} | Estado: {self.estado}"
 
 
 class Equipo:
@@ -88,9 +71,7 @@ class Equipo:
     @codigo.setter
     def codigo(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El código del equipo no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El código del equipo no puede estar vacío.")
         self.__codigo = valor
 
     @property
@@ -100,9 +81,7 @@ class Equipo:
     @nombre.setter
     def nombre(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El nombre del equipo no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El nombre del equipo no puede estar vacío.")
         self.__nombre = valor
 
     @property
@@ -112,9 +91,7 @@ class Equipo:
     @tipo.setter
     def tipo(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El tipo de equipo no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El tipo de equipo no puede estar vacío.")
         self.__tipo = valor
 
     @property
@@ -124,19 +101,12 @@ class Equipo:
     @estado.setter
     def estado(self, valor):
         estados_validos = ["Disponible", "Reservado", "Mantenimiento"]
-
         if valor not in estados_validos:
-            raise ServicioNoDisponibleError(
-                f"Estado inválido. Debe ser uno de: {estados_validos}"
-            )
-
+            raise ServicioNoDisponibleError(f"Estado inválido. Debe ser uno de: {estados_validos}")
         self.__estado = valor
 
     def mostrar_informacion(self):
-        return (
-            f"Equipo {self.codigo} - {self.nombre} | "
-            f"Tipo: {self.tipo} | Estado: {self.estado}"
-        )
+        return f"Equipo {self.codigo} - {self.nombre} | Tipo: {self.tipo} | Estado: {self.estado}"
 
 
 class Asesoria:
@@ -153,9 +123,7 @@ class Asesoria:
     @codigo.setter
     def codigo(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El código de la asesoría no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El código de la asesoría no puede estar vacío.")
         self.__codigo = valor
 
     @property
@@ -165,9 +133,7 @@ class Asesoria:
     @tema.setter
     def tema(self, valor):
         if not valor or not str(valor).strip():
-            raise ServicioNoDisponibleError(
-                "El tema de la asesoría no puede estar vacío."
-            )
+            raise ServicioNoDisponibleError("El tema de la asesoría no puede estar vacío.")
         self.__tema = valor
 
     @property
@@ -179,15 +145,9 @@ class Asesoria:
         try:
             valor = int(valor)
         except ValueError:
-            raise ServicioNoDisponibleError(
-                "La duración debe ser un número entero."
-            )
-
+            raise ServicioNoDisponibleError("La duración debe ser un número entero.")
         if valor <= 0:
-            raise ServicioNoDisponibleError(
-                "La duración debe ser mayor que cero."
-            )
-
+            raise ServicioNoDisponibleError("La duración debe ser mayor que cero.")
         self.__duracion = valor
 
     @property
@@ -197,17 +157,9 @@ class Asesoria:
     @estado.setter
     def estado(self, valor):
         estados_validos = ["Disponible", "Reservada", "Cancelada"]
-
         if valor not in estados_validos:
-            raise ServicioNoDisponibleError(
-                f"Estado inválido. Debe ser uno de: {estados_validos}"
-            )
-
+            raise ServicioNoDisponibleError(f"Estado inválido. Debe ser uno de: {estados_validos}")
         self.__estado = valor
 
     def mostrar_informacion(self):
-        return (
-            f"Asesoría {self.codigo} - {self.tema} | "
-            f"Duración: {self.duracion} minutos | "
-            f"Estado: {self.estado}"
-        )
+        return f"Asesoría {self.codigo} - {self.tema} | Duración: {self.duracion} minutos | Estado: {self.estado}"

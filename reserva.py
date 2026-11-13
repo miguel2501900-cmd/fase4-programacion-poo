@@ -16,15 +16,14 @@ class Reserva:
             if not isinstance(self.duracion, (int, float)) or self.duracion <= 0:
                 raise ReservaFallidaError(f"Reserva {self.id_reserva}: La duración debe ser mayor a 0.")
             
-            # Verifica si el servicio está disponible antes de confirmar la reserva
-            if self.servicio.estado != "Disponible":
+            if str(self.servicio.estado).strip() != "Disponible":
                 raise ReservaFallidaError(
                     f"Reserva {self.id_reserva}: El servicio {self.servicio.codigo} no se puede reservar porque está {self.servicio.estado}."
                 )
 
         except ReservaFallidaError as e:
             self.estado = "CANCELADA"
-            raise # Relanza el error hacia la interfaz gráfica
+            raise 
         except Exception as e:
             self.estado = "CANCELADA"
             raise ReservaFallidaError(f"Fallo inesperado al procesar reserva: {e}")
@@ -39,7 +38,6 @@ class Reserva:
         
         self.estado = "CONFIRMADA"
         
-        # ACTUALIZACIÓN: cambiar el estado del servicio según su tipo 
         tipo_servicio = self.servicio.__class__.__name__
         if tipo_servicio == "Sala":
             self.servicio.estado = "Ocupada"
@@ -51,4 +49,4 @@ class Reserva:
     def cancelar(self):
         self.estado = "CANCELADA"
         if self.servicio:
-            self.servicio.estado = "Disponible" # Libera el servicio
+            self.servicio.estado = "Disponible"
