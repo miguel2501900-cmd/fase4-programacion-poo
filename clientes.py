@@ -1,6 +1,10 @@
+from entidades import Entidad
 from excepciones import ClienteInvalidoError
 
-class Cliente:
+
+class Cliente(Entidad):
+    """Cliente de Software FJ. Sus datos personales están encapsulados y se validan al asignarse."""
+
     def __init__(self, cedula, nombre, correo, telefono):
         self.cedula = cedula
         self.nombre = nombre
@@ -50,3 +54,11 @@ class Cliente:
         if not valor or not str(valor).strip():
             raise ClienteInvalidoError("El teléfono de contacto no puede estar vacío.")
         self.__telefono = valor
+
+    # --- Métodos que exige la clase abstracta Entidad ---
+    def identificador(self):
+        # Un cliente se distingue por su cédula.
+        return self.cedula
+
+    def describir(self):
+        return f"Cédula: {self.cedula} | Nombre: {self.nombre} | Correo: {self.correo} | Teléfono: {self.telefono}"

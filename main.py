@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from Servicios import Sala, Equipo, Asesoria  # <- Corregido a 'Servicios'
 import excepciones
+import simulacion
 
 class AplicacionSoftwareFJ(tk.Tk):
     def __init__(self):
@@ -84,7 +85,9 @@ class AplicacionSoftwareFJ(tk.Tk):
                 self.ent_telefono.get()
             )
             self.lista_clientes.append(nuevo_cliente)
-            info_cliente = f"Cédula: {nuevo_cliente.cedula} | Nombre: {nuevo_cliente.nombre} | Correo: {nuevo_cliente.correo} | Teléfono: {nuevo_cliente.telefono}"
+            # describir() viene de la clase abstracta Entidad.
+            info_cliente = nuevo_cliente.describir()
+            excepciones.registrar_evento(f"Cliente registrado: {info_cliente}")
             self.visor_clientes_ui.insert('end', info_cliente)
             messagebox.showinfo("Éxito", f"Cliente {nuevo_cliente.nombre} registrado correctamente.")
             
@@ -238,11 +241,11 @@ class AplicacionSoftwareFJ(tk.Tk):
 
         for s in self.lista_servicios:
             if isinstance(s, Sala):
-                self.visor_salas_ui.insert('end', s.mostrar_informacion())
+                self.visor_salas_ui.insert('end', s.describir())
             elif isinstance(s, Equipo):
-                self.visor_equipos_ui.insert('end', s.mostrar_informacion())
+                self.visor_equipos_ui.insert('end', s.describir())
             elif isinstance(s, Asesoria):
-                self.visor_asesorias_ui.insert('end', s.mostrar_informacion())
+                self.visor_asesorias_ui.insert('end', s.describir())
 
     # --- ACCIONES DE REGISTRO DE SERVICIOS ---
     def registrar_sala(self):
@@ -257,7 +260,8 @@ class AplicacionSoftwareFJ(tk.Tk):
                 self.ent_capacidad.get()
             )
             self.lista_servicios.append(nueva_sala)
-            self.visor_salas_ui.insert('end', nueva_sala.mostrar_informacion())
+            excepciones.registrar_evento(f"Servicio registrado: {nueva_sala.describir()}")
+            self.visor_salas_ui.insert('end', nueva_sala.describir())
             messagebox.showinfo("Éxito", f"Sala {nueva_sala.codigo} registrada correctamente.")
             
             self.ent_nombre_sala.delete(0, 'end')
@@ -281,7 +285,8 @@ class AplicacionSoftwareFJ(tk.Tk):
                 self.ent_tipo_eq.get()
             )
             self.lista_servicios.append(nuevo_equipo)
-            self.visor_equipos_ui.insert('end', nuevo_equipo.mostrar_informacion())
+            excepciones.registrar_evento(f"Servicio registrado: {nuevo_equipo.describir()}")
+            self.visor_equipos_ui.insert('end', nuevo_equipo.describir())
             messagebox.showinfo("Éxito", f"Equipo {nuevo_equipo.codigo} registrado correctamente.")
             
             self.ent_nombre_eq.delete(0, 'end')
@@ -305,7 +310,8 @@ class AplicacionSoftwareFJ(tk.Tk):
                 self.ent_duracion_as.get()
             )
             self.lista_servicios.append(nueva_asesoria)
-            self.visor_asesorias_ui.insert('end', nueva_asesoria.mostrar_informacion())
+            excepciones.registrar_evento(f"Servicio registrado: {nueva_asesoria.describir()}")
+            self.visor_asesorias_ui.insert('end', nueva_asesoria.describir())
             messagebox.showinfo("Éxito", f"Asesoría {nueva_asesoria.codigo} registrada correctamente.")
             
             self.ent_tema_as.delete(0, 'end')
@@ -387,12 +393,12 @@ class AplicacionSoftwareFJ(tk.Tk):
             nueva_reserva.procesar()
             self.lista_reservas.append(nueva_reserva)
             
-            info_reserva = f"Reserva: {nueva_reserva.id_reserva} | Cliente: {cliente_obj.nombre} | Servicio: {servicio_obj.codigo} | Estado: {nueva_reserva.estado}"
+            info_reserva = f"Reserva: {nueva_reserva.id_reserva} | Cliente: {cliente_obj.nombre} | Servicio: {servicio_obj.codigo} | Estado: {nueva_reserva.estado} | Costo con IVA: ${nueva_reserva.costo:,.0f}"
             self.visor_reservas_ui.insert('end', info_reserva)
             
             self.actualizar_visores_servicios()
 
-            messagebox.showinfo("Operación Exitosa", f"Reserva {nueva_reserva.id_reserva} confirmada correctamente. El servicio cambió a estado: {servicio_obj.estado}")
+            messagebox.showinfo("Operación Exitosa", f"Reserva {nueva_reserva.id_reserva} confirmada correctamente. El servicio cambió a estado: {servicio_obj.estado}. Costo con IVA: ${nueva_reserva.costo:,.0f}")
 
             self.actualizar_siguiente_codigo_reserva()
             self.ent_cedula_res.delete(0, 'end')
@@ -421,6 +427,30 @@ class AplicacionSoftwareFJ(tk.Tk):
             command=self.probando_excepcion
         )
         btn_probar_excepcion.pack(pady=10)
+
+        # Corre las operaciones de prueba del Anexo 3 sin tocar los datos de las otras pestañas.
+        btn_simulacion = ttk.Button(
+            frame_audit,
+            text="Ejecutar Simulación de 16 Operaciones",
+            command=self.ejecutar_simulacion
+        )
+        btn_simulacion.pack(pady=10)
+
+        ttk.Label(self.tab_auditoria, text="Resultado de la simulación (el detalle queda en sistema_logs.txt):", font=("Arial", 9, "bold")).pack(anchor="w", padx=35, pady=(10, 2))
+        self.visor_simulacion_ui = tk.Listbox(self.tab_auditoria, width=110, height=18)
+        self.visor_simulacion_ui.pack(padx=30, pady=5)
+
+    def ejecutar_simulacion(self):
+        self.visor_simulacion_ui.delete(0, 'end')
+        try:
+            resultados = simulacion.ejecutar_simulacion()
+        except Exception as e:
+            # La simulación ya controla sus errores; esto protege la interfaz ante cualquier otro.
+            excepciones.registrar_evento(f"La simulación se interrumpió: {e!r}")
+            messagebox.showerror("Error de Simulación", f"La simulación se interrumpió:\n{e}")
+        else:
+            for linea in resultados:
+                self.visor_simulacion_ui.insert('end', linea)
 
     def probando_excepcion(self):
         try:
